@@ -47,6 +47,8 @@ boot()
 
 要点：所有方法返回 Promise；环境检测类 `isMicroApp()`/`isElectron()` 返回 boolean 不抛异常；`openWindow` 类仅特定客户端有效。
 
+**生产级模式（参照 asset-hub）**：用一个 Bridge 组件（如 `components/providers/DooTaskBridge.tsx`）在应用最外层 `await appReady()` 一次，把用户/主题/语言放进 context 供全局用；用户上下文走菜单 url 的标准参数 `?theme={system_theme}&lang={system_lang}&user_id={user_id}&user_token={user_token}`；脱离宿主（直接浏览器打开）捕获 `UnsupportedError` 自动降级。后端接口鉴权常用「前端把 user_id/token 放进请求头（如 `x-user-id`），服务端读取」的简单方式。
+
 ## 后端 SDK
 
 三种语言能力一致：默认连主程序 `http://nginx`，用前端传来的用户 token 鉴权，可查用户、发消息、操作项目/任务/对话等。
