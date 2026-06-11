@@ -1,0 +1,70 @@
+# CLAUDE.md — {{插件名}} DooTask 插件
+
+本文件为后续会话提供本插件的关键上下文。Claude Code 在本目录工作时会自动加载它，
+因此**新开会话不必重新摸索**——尤其是与 DooTask 主程序交互时的本地路径与约定都在下面。
+
+## 这是什么
+
+{{产品一句话描述}}。这是一个 DooTask 插件，appid `{{appid}}`，以系统应用方式安装到 DooTask 运行。
+
+## 技术栈
+
+- 前端：{{前端框架（Next.js / TanStack Start）}} + shadcn/ui + Tailwind CSS
+- 后端：{{框架自带服务端路由，单进程单端口 3000 / 或 Go·Python 等}}
+- 数据：{{SQLite(better-sqlite3) / 或主程序数据库等}}
+- 宿主集成：`@dootask/tools`
+
+## 本地参考资料 —— 先读本地，不要上网找 DooTask 文档
+
+**与主程序交互、查 DooTask API / 约定 / 主程序行为时，一律先读下面的本地源码与文档，禁止联网搜索 DooTask 相关资料**（线上文档可能过时/不准，本机就有权威源码）：
+
+- DooTask 主程序源码：`/home/coder/workspaces/dootask`
+- 本插件测试部署目录：`/home/coder/workspaces/dootask/docker/appstore/apps/community_{{作者}}_{{appid}}`
+- `@dootask/tools` 源码（前端库 + Go/Node/Python 后端 SDK）：`/home/coder/workspaces/dootask-tools`
+- 插件开发文档：`/home/coder/workspaces/dootask-appstore/appstore/apps/_/README_CN.md`
+- 同技术栈参照样板：`/home/coder/workspaces/dootask-plugins/crm`（TanStack Start，扁平布局）、`/home/coder/workspaces/dootask-plugins/asset-hub`（Next.js，含 `docs/rules/`）
+
+## 本插件约定（别改坏）
+
+- **标识**：appid `{{appid}}`；镜像 `dootask/{{appid}}`；URL 前缀 `/apps/{{appid}}`。三者同源，不要分叉。
+- **basePath 四处必须完全一致**（任一不一致 → 静态资源/路由 404）：
+  1. 前端 base 配置（{{next.config.ts 的 basePath / vite.config.ts 的 base}}）= `/apps/{{appid}}`
+  2. `{{版本}}/nginx.conf` 的 `location /apps/{{appid}}/`
+  3. `{{版本}}/config.yml` 的 `menu_items.url`：`apps/{{appid}}/...`
+  4. 前端内部链接交给框架自动加前缀，别手写裸路径
+- **网络**：容器监听 `3000`，**不对外暴露端口**（由主 nginx 反代）；nginx 上游写**显式端口** `http://{{appid}}:3000`。
+- **配置字段**：安装时 `fields`（见 `{{版本}}/config.yml`）→ 环境变量（见 `{{版本}}/docker-compose.yml`）。
+- **鉴权**：菜单 url 注入 `user_id`/`user_token`/`theme`/`lang`；前端经 `@dootask/tools` 初始化（脱离宿主自动降级），调后端时把用户身份放进请求头传给服务端。
+
+## 目录结构（扁平布局）
+
+- `config.yml` —— 顶层元数据（name/description/author/tags）
+- `logo.svg`、`README.md`、`README_zh.md`
+- `.build.yml` —— 构建配置（`image: dootask/{{appid}}` / `context: src` / `dockerfile: src/Dockerfile`）
+- `src/` —— 前后端源码 + `Dockerfile`
+- `{{版本}}/` —— `config.yml`（功能配置）/ `docker-compose.yml` / `nginx.conf` / `CHANGELOG*.md`
+
+## 构建 / 部署 / 测试
+
+```bash
+# 本地开发（脱离 DooTask 宿主，自动降级）
+cd src && pnpm install && pnpm dev
+
+# 1) 构建镜像 —— tag 必须等于将要安装的版本号（compose 里 ${PLUGIN_VERSION} 会替换成它）
+docker build -t dootask/{{appid}}:{{版本}} -f src/Dockerfile src
+
+# 2) 部署打包产物到测试目录 apps/community_{{作者}}_{{appid}}/
+#    打包包含：config.yml + logo* + README* + {{版本}}/（及 icon/ 等非版本子目录）
+#    打包排除：src/、.build.yml、CLAUDE.md/AGENTS.md、点文件、其它版本目录
+#    便捷方式：用户级技能 dootask-create-plugin 的 scripts/deploy_to_test.sh 已实现该规则：
+#      deploy_to_test.sh <本插件目录> {{版本}} {{作者}}
+
+# 3) 后台安装：DooTask 管理员 → 应用商店 → 「更新应用列表」→ 找到本应用 → 安装
+
+# 4) 验证
+docker ps | grep {{appid}}                 # 容器是否在跑
+docker logs <容器名>                        # 启动日志
+# 打开菜单入口 /apps/{{appid}}，首页应显示当前用户名（= 与主程序握手成功）
+```
+
+> 重新走「创建/部署」完整流程时，可用用户级技能 `dootask-create-plugin`（含 build/deploy 脚本）。
