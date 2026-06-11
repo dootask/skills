@@ -4,7 +4,9 @@
 
 路径里的 `<appid>`、`<版本>` 按实际替换。生成前务必对照参照样板的真实文件校准。
 
-**默认技术栈（全 JS/TS）**：前端从 **Next.js** 或 **TanStack Start** 二选一（运行时问用户），都配 **shadcn/ui + Tailwind**；**后端不单开**——用框架自带的服务端路由（Next.js 的 `app/api/**/route.ts`、TanStack Start 的 server routes），单进程单端口同时托管页面 + API。最权威的 JS/TS 全栈样板：`/home/coder/workspaces/dootask-plugins/asset-hub`（Next.js + SQLite + shadcn，其 `docs/rules/` 与 `CLAUDE.md` 是权威规范）。
+**默认技术栈（全 JS/TS）**：前端从 **Next.js** 或 **TanStack Start** 二选一（运行时问用户），都配 **shadcn/ui + Tailwind**；**后端不单开**——用框架自带的服务端路由（Next.js 的 `app/api/**/route.ts`、TanStack Start 的 server routes / Nitro），单进程单端口（3000）同时托管页面 + API。两个权威全栈样板：
+- `/home/coder/workspaces/dootask-plugins/crm`（**TanStack Start**，**扁平布局,与本技能 1:1**，首选对照）
+- `/home/coder/workspaces/dootask-plugins/asset-hub`（**Next.js**，`docs/rules/` 与 `CLAUDE.md` 是权威规范）
 
 ---
 
@@ -117,7 +119,7 @@ location /apps/<appid>/ {
 
 ### 变体
 
-- **TanStack Start**：Vite 底座，router/vite 的 base 设 `/apps/<appid>/`，自带 server（或 Nitro）单端口托管页面 + server routes，nginx 同样 `proxy_pass http://<appid>:3000`，其余一致。
+- **TanStack Start**（1:1 扁平样板 `/home/coder/workspaces/dootask-plugins/crm`）：`vite.config.ts` 设 `base: '/apps/<appid>/'`（用 `tanstackStart()` + `nitro` 插件），Dockerfile 多阶段构建后 `CMD ["node", ".output/server/index.mjs"]`、监听 3000。nginx 需**两个 location**：先 `location /apps/<appid>/assets/ { proxy_pass http://<appid>:3000/assets/; }`（剥前缀映射 vite 静态产物，必须放在前面），再 `location /apps/<appid>/ { proxy_pass http://<appid>:3000; }`（SSR + API，不剥前缀）。其余（compose/字段/菜单）一致。
 - **后端用 Go/Python（仅按需）**：参照 `approve`（Go，容器监听 80）、`ai`（Python，监听 5001）。容器监听自己的端口，nginx 写 `proxy_pass http://<appid>:<该端口>`；这类后端常自己处理前缀（可加末尾 `/` 剥前缀），需主程序校验 token 时加 `auth_request` 子请求转发到 `http://service/api/<appid>/verifyToken`（见 approve 的 `nginx.conf`）。
 
 ### 构建

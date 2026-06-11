@@ -19,8 +19,9 @@ scripts/build_image.sh <插件目录> <版本号>
 ### 2. 部署打包产物到主程序测试目录
 
 ```bash
-scripts/deploy_to_test.sh <插件目录> <版本号> [apps目录]
-# apps目录默认 /home/coder/workspaces/dootask/docker/appstore/apps
+scripts/deploy_to_test.sh <插件目录> <版本号> <作者>
+# 部署到 <apps>/community_<作者>_<appid>/，apps 默认 /home/coder/workspaces/dootask/docker/appstore/apps
+# 作者 = AppStore 发布账号，本机为 kuaifan
 ```
 
 **打包包含**：`config.yml`、`logo*`、`README*`、目标 `<版本>/` 整个目录、其它非版本子目录（如 `icon/`、`resources/`）。
@@ -28,7 +29,7 @@ scripts/deploy_to_test.sh <插件目录> <版本号> [apps目录]
 
 判定「版本目录」的依据：子目录内含 `docker-compose.yml`。脚本据此只拷目标版本目录，跳过其它版本目录与 `src/`（点文件因 shell 通配默认不展开而天然排除）。
 
-验证：`ls <apps目录>/<appid>/` 应看到 `config.yml` + `logo` + `README*` + `<版本>/`，且**不含** `src/`、`.build.yml`。
+验证：`ls <apps目录>/community_<作者>_<appid>/` 应看到 `config.yml` + `logo` + `README*` + `<版本>/`，且**不含** `src/`、`.build.yml`。
 
 ### 3. 用户在 DooTask 后台安装
 
@@ -50,7 +51,7 @@ scripts/deploy_to_test.sh <插件目录> <版本号> [apps目录]
 | 现象 | 多半原因 |
 | --- | --- |
 | 安装时拉不到镜像 / 镜像不存在 | 本地未 build 出与安装版本号一致的 tag；重跑 `build_image.sh <目录> <版本>` |
-| 应用列表里看不到新应用 | 没点「更新应用列表」，或打包产物没拷进 `apps/<appid>/`，或 `config.yml` 不合法 |
+| 应用列表里看不到新应用 | 没点「更新应用列表」，或打包产物没拷进 `apps/community_<作者>_<appid>/`，或 `config.yml` 不合法 |
 | 页面 404 / 白屏 | `nginx.conf` 的 `location` 路径与 `menu_items.url` 基础路径不一致；或 `proxy_pass` 上游服务名/端口写错 |
 | 页面打开但报「请在 DooTask 内打开」 | 正常——直接浏览器访问会触发 `UnsupportedError`，需从 DooTask 菜单进入 |
 | 容器起不来 | `docker logs` 看日志；多为环境变量缺失（fields 没填）或数据库连接变量不对 |
