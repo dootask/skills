@@ -17,6 +17,7 @@
 - 容器监听 **3000**、不对外暴露端口；nginx 上游写**显式端口** `http://{{appid}}:3000`（漏端口 → 502）。
 - `appid` = 镜像名 `dootask/{{appid}}` = 路径前缀，三者同源别分叉。
 - 顶层 `config.yml` 只放元数据；`fields`/`menu_items`/`hooks` 放 `{{版本}}/config.yml`。
+- `@dootask/tools` 分两侧别混用：**前端侧**(`appReady`/`getUserInfo`，依赖 window，SSR 下必须动态 `import()`)、**后端侧**(`DooTaskClient`，调主程序 `http://nginx`)。
 
 ## 命令
 

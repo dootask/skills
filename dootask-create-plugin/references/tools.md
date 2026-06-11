@@ -2,6 +2,15 @@
 
 官方工具库，前端 npm 包 + 后端 Go/Node/Python SDK。当前前端版本约 `1.2.7`（以 npm 实际为准）。本机源码：`/home/coder/workspaces/dootask-tools`（前端在 `src/`，后端在 `server/go`、`server/python`、`server/node`，另有 `example/` 示例）。在线仓库：`https://github.com/dootask/tools`。
 
+## 一个包，两侧：前端（浏览器）≠ 后端（服务端）
+
+`@dootask/tools` 同一个 npm 包里含**两套互不通用**的东西，**按代码跑在哪决定用哪侧，别混用**：
+
+- **前端 / 浏览器侧** —— `import { appReady, getUserInfo, ... } from "@dootask/tools"`：微前端桥，拿主程序注入的用户/主题/语言、开对话框、选人等。**依赖 `window`**，在 Next.js / TanStack Start 等 SSR 框架里**必须客户端动态 `import()`（或 client-only）**，否则 SSR 阶段触碰 `window` 直接崩。
+- **后端 / 服务端侧** —— Node：`import { DooTaskClient } from "@dootask/tools"`（同包，另一入口）；以用户 token 调主程序 HTTP API，默认 `server: "http://nginx"`。其它语言：Go `github.com/dootask/tools/server/go`、Python `pip install dootask-tools`（`from dootask import DooTaskClient`）。
+
+判断：浏览器组件里 → 前端侧；route handler / server function / 后端进程里 → 后端侧。参照 `crm` 的 `lib/dootask.ts`（前端，动态 import）与 `lib/dootask-server.ts`（服务端，DooTaskClient）。
+
 ## 前端
 
 安装与引入：
