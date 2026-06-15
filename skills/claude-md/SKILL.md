@@ -12,7 +12,7 @@ disable-model-invocation: true
 
 CLAUDE.md 在**每次会话开始时被全量注入**上下文(作为 system prompt 之后的一条 user message,不是强制配置,Claude 会尽量遵守但不保证)。两个直接后果决定了怎么写:
 
-1. **占 token,且越长遵从度越低。** 文件越长,Claude 越倾向把里面的规则当成"可忽略"(它被包在标注 may-or-may-not-be-relevant 的提醒里)。塞太多 → 关键指令被噪声淹没,反而整体被无视。官方硬指标:**目标 < 200 行**。
+1. **占 token,且越长遵从度越低。** 文件越长,Claude 越倾向把里面的规则当成"可忽略"(它被包在标注 may-or-may-not-be-relevant 的提醒里)。塞太多 → 关键指令被噪声淹没,反而整体被无视。官方推荐:**目标 < 200 行**(memory 文档原文 "target under 200 lines",超过会降低遵从度)。
 2. **只在"每次会话都需要"时才值得占这个位置。** 偶尔才用的多步流程、参考资料,应做成 skill 或放进 `references/` 按需加载,而不是塞进每次会话。必须 100% 生效的红线(如"禁止改 .env")要用 hook 强制,prompt 里的规则只是"请求"。
 
 ## 黄金筛选法则(贯穿始终)

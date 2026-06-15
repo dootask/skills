@@ -1,6 +1,6 @@
 # B 型：占位目录型（工程仓库型）
 
-**代表仓库：kpi、asset-hub、memos、mcp。** 先读主 `SKILL.md` 的「三型共有铁律」和「CHANGELOG 规范」，本文件只讲 B 型特有部分。
+**代表仓库：kpi、asset-hub、memos、mcp。** 先读主 `SKILL.md` 的「共有铁律」和「CHANGELOG 规范」，本文件只讲 B 型特有部分。
 
 ## 布局与发布机制
 
@@ -72,7 +72,7 @@ gh run list --workflow=release.yml --limit 3
 gh run watch
 ```
 
-验证：Docker Hub 对应镜像出现新 tag；DooTask 应用商店里对应 appid 插件版本已更新，更新说明显示本次 CHANGELOG。
+验证：Docker Hub 对应镜像出现新 tag；DooTask 应用商店里对应 appid 插件版本已更新，更新说明显示本次 CHANGELOG。最后提醒用户：DooTask 管理端 → 应用商店 → **更新应用列表** → 更新到新版 → 强刷浏览器（Ctrl+Shift+R）。
 
 ## 发布失败时
 

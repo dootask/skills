@@ -1,6 +1,6 @@
 # A 型：真实版本目录型（扁平布局）
 
-**代表仓库：crm。** 先读主 `SKILL.md` 的「三型共有铁律」和「CHANGELOG 规范」，本文件只讲 A 型特有部分。
+**代表仓库：crm。** 先读主 `SKILL.md` 的「共有铁律」和「CHANGELOG 规范」，本文件只讲 A 型特有部分。
 
 ## 布局与发布机制
 
@@ -65,7 +65,7 @@ cp -r 0.1.0 0.2.0      # 用实际的上一版 / 新版号
 
 ```bash
 bash ${CLAUDE_PLUGIN_ROOT}/skills/create-plugin/scripts/build_image.sh . 0.2.0
-bash ${CLAUDE_PLUGIN_ROOT}/skills/create-plugin/scripts/upload_to_appstore.sh . 0.2.0
+bash ${CLAUDE_PLUGIN_ROOT}/skills/create-plugin/scripts/upload_to_appstore.sh . 0.2.0 <作者>   # 第3参=本机 AppStore 账号(如 kuaifan)，必填
 ```
 
 验证抓手：`docker ps | grep crm`、`docker logs <容器>`、页面 `/apps/crm`，并**单独 curl 一个 `/apps/crm/assets/*.js`** 确认资源加载（页面 200 不代表资源能加载，见仓库 CLAUDE.md）。
