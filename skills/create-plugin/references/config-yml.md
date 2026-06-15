@@ -19,7 +19,7 @@ tags:                              # 可选，分类
   - 审批
 ```
 
-`name`/`description` 也可写成单值字符串（如 `name: MysqlExposePort`），但推荐多语言对象。**不要**把 `fields`/`menu_items`/`hooks` 放顶层——放版本目录。
+`name`/`description` 也可写成单值字符串（如 `name: MysqlExposePort`），但推荐多语言对象。一般**不要**把 `fields`/`menu_items`/`hooks` 放顶层——放版本目录（这样随版本走）；**例外**：纯配置型插件（如 `mysql-expose-port`）没有版本 `config.yml` 时，`fields` 直接放顶层、版本目录只留 `docker-compose.yml`。
 
 ## 版本目录 config.yml（功能配置）
 
@@ -68,7 +68,7 @@ menu_items:
     label:
       en: My App
       zh: 我的应用
-    url: "apps/<appid>/?token={user_token}&lang={system_lang}&theme={system_theme}"
+    url: "apps/<appid>/?theme={system_theme}&lang={system_lang}&user_id={user_id}&user_token={user_token}"   # 参数名自定，但必须与前端读取的一致；这里用真实样板 crm 的约定
     url_type: iframe           # 见下方「打开模式」说明
     immersive: true            # iframe[_blank] 全屏沉浸（可选）
     icon: ./icon.png           # 可选，默认用应用 logo
@@ -105,7 +105,7 @@ hooks:
   user_update: user_update.sh
 ```
 
-写法可为脚本文件名（相对应用/版本目录）或 inline shell（`cmd: |`）。可用环境变量：`APP_ID`/`APP_NAME`/`ACTION`/`PHASE`/`MAIN_VERSION`；卸载附带 `DELETE_DATA`；升级附带 `PREV_VERSION`；操作者 `ACTOR_*`；用户事件 `USER_*` 与 `USER_EVENT`。注意 inline shell 里字面量 `$` 要写 `$$`。
+写法可为脚本文件名（相对应用/版本目录）或 inline shell（`cmd: |`）。可用环境变量：`APP_ID`/`APP_NAME`/`ACTION`/`PHASE`/`MAIN_VERSION`；卸载附带 `DELETE_DATA`；升级附带 `PREV_VERSION`；操作者 `ACTOR_*`；用户事件 `USER_*` 与 `USER_EVENT`。hook 的 `cmd` 由钩子运行器当普通 shell 执行，环境变量**直接写 `$VAR`**（如上例 `$DELETE_DATA`，真实插件 `approve` 即如此）；`$$` 转义是 `docker-compose.yml` 专属，别用在 hook 里。
 
 ### require_version / conflict_version
 

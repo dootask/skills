@@ -2,14 +2,19 @@
 
 {{产品一句话描述}}。appid `{{appid}}`，{{Next.js / TanStack Start}} 单镜像全栈。
 
-## 与主程序交互：先读本地，别联网
+## 本地参考：先读本地，别联网
 
-主程序、工具库、文档都在本机。查 DooTask API / 约定 / 主程序行为时**读本地源码，不要上网搜 DooTask**（线上文档会过时/不准）：
+查 DooTask API / 约定 / 主程序行为时优先读本机源码，**别上网搜 DooTask**（线上文档会过时/不准）。下表代表词（`ref:xxx`）按「**本地路径存在就读 → 否则 `git clone --depth=1 https://github.com/<在线仓库> ${DOOTASK_REFS:-/tmp/dootask-refs}/<repo>` 后读 → 私有/拿不到则就现有信息谨慎处理**」获取：
 
-- 主程序源码：`/home/coder/workspaces/dootask`
-- `@dootask/tools`（前端库 + Go/Node/Python SDK）：`/home/coder/workspaces/dootask-tools`
-- 插件开发文档：`/home/coder/workspaces/dootask-appstore/appstore/apps/_/README_CN.md`
-- 同栈样板：`/home/coder/workspaces/dootask-plugins/crm`（TanStack Start）、`.../asset-hub`（Next.js）
+| 代表词 | 用途 | 本机本地路径 | 在线仓库（clone 源） |
+| --- | --- | --- | --- |
+| `ref:dootask` | 主程序源码 | `/home/coder/workspaces/dootask` | `kuaifan/dootask`（公开） |
+| `ref:tools` | `@dootask/tools` 前端库 + Go/Node/Python SDK | `/home/coder/workspaces/dootask-tools` | `dootask/tools`（公开） |
+| `ref:appstore-docs` | 官方插件开发文档 `apps/_/README_CN.md` | `/home/coder/workspaces/dootask-appstore/appstore/apps/_/README_CN.md` | `dootask/appstore`（**私有**，需 gh 授权） |
+| `ref:crm` | 同栈样板·TanStack Start | `/home/coder/workspaces/dootask-plugins/crm` | `dootask/crm`（公开） |
+| `ref:asset-hub` | 同栈样板·Next.js | `/home/coder/workspaces/dootask-plugins/asset-hub` | `dootask/asset-hub`（公开） |
+
+> 上表取自技能 `dootask:create-plugin` 的 `references/samples.md`（按本插件栈已裁剪）；用到表外的样板时从该文件补对应 `ref:` 行。
 
 ## 雷区（踩了就 404 / 装不上）
 

@@ -2,17 +2,17 @@
 
 每种形态给出：目录结构（**扁平布局**：项目根目录就是 `<appid>/`）、`docker-compose.yml`、`nginx.conf`、构建方式、参照样板。新建项目统一用扁平布局；个别现成项目（asset-hub/kpi/memos）用 `dootask-plugin/` 子目录包裹包内容，那是其历史布局，**照抄它们的 Dockerfile/basePath/nginx/集成写法，但目录落到扁平布局**。
 
-路径里的 `<appid>`、`<版本>` 按实际替换。生成前务必对照参照样板的真实文件校准。
+路径里的 `<appid>`、`<版本>` 按实际替换。生成前务必对照参照样板的真实文件校准。下文样板用**带 `ref:` 前缀的代表词**指代（如 `ref:crm`/`ref:asset-hub`），其本地路径与获取方式（本地优先，缺失则 `git clone --depth=1`）统一见 `references/samples.md`。
 
 **默认技术栈（全 JS/TS）**：前端从 **Next.js** 或 **TanStack Start** 二选一（运行时问用户），都配 **shadcn/ui + Tailwind**；**后端不单开**——用框架自带的服务端路由（Next.js 的 `app/api/**/route.ts`、TanStack Start 的 server routes / Nitro），单进程单端口（3000）同时托管页面 + API。两个权威全栈样板：
-- `/home/coder/workspaces/dootask-plugins/crm`（**TanStack Start**，**扁平布局,与本技能 1:1**，首选对照）
-- `/home/coder/workspaces/dootask-plugins/asset-hub`（**Next.js**，`docs/rules/` 与 `CLAUDE.md` 是权威规范）
+- `ref:crm`（**TanStack Start**，**扁平布局,与本技能 1:1**，首选对照）
+- `ref:asset-hub`（**Next.js**，`docs/rules/` 与 `CLAUDE.md` 是权威规范）
 
 ---
 
 ## 形态 A：前后端自建镜像型（最常见，默认走 JS/TS 单进程全栈）
 
-有自己的前端页面 + 后端接口，打成一个 `dootask/<appid>` 镜像。**默认 Next.js 单进程全栈**：`app/api/**/route.ts` 即后端，一个 `next start` 进程同端口托管页面与 API，不用 Express/Koa、不用双进程。1:1 模式样板：`/home/coder/workspaces/dootask-plugins/asset-hub`（它用 `dootask-plugin/` 包裹布局，下面把同样写法落到扁平布局）。
+有自己的前端页面 + 后端接口，打成一个 `dootask/<appid>` 镜像。**以 Next.js 单进程全栈为例**（与 TanStack Start 平级，运行时让用户二选一；TanStack 写法见下方变体）：`app/api/**/route.ts` 即后端，一个 `next start` 进程同端口托管页面与 API，不用 Express/Koa、不用双进程。本模式参照样板：`ref:asset-hub`（注意它是 `dootask-plugin/` 包裹布局、**非扁平**，只照抄它的写法，目录仍落到下面的扁平布局；要 1:1 对照扁平结构本身看 `ref:crm`）。
 
 ### 扁平布局目录
 
@@ -119,14 +119,14 @@ location /apps/<appid>/ {
 
 ### 变体
 
-- **TanStack Start**（1:1 扁平样板 `/home/coder/workspaces/dootask-plugins/crm`）：`vite.config.ts` 设 `base: '/apps/<appid>/'`（用 `tanstackStart()` + `nitro` 插件），Dockerfile 多阶段构建后 `CMD ["node", ".output/server/index.mjs"]`、监听 3000。nginx 需**两个 location**：先 `location /apps/<appid>/assets/ { proxy_pass http://<appid>:3000/assets/; }`（剥前缀映射 vite 静态产物，必须放在前面），再 `location /apps/<appid>/ { proxy_pass http://<appid>:3000; }`（SSR + API，不剥前缀）。其余（compose/字段/菜单）一致。
-- **后端用 Go/Python（仅按需）**：参照 `approve`（Go，容器监听 80）、`ai`（Python，监听 5001）。容器监听自己的端口，nginx 写 `proxy_pass http://<appid>:<该端口>`；这类后端常自己处理前缀（可加末尾 `/` 剥前缀），需主程序校验 token 时加 `auth_request` 子请求转发到 `http://service/api/<appid>/verifyToken`（见 approve 的 `nginx.conf`）。
+- **TanStack Start**（1:1 扁平样板 `ref:crm`）：`vite.config.ts` 设 `base: '/apps/<appid>/'`（用 `tanstackStart()` + `nitro` 插件），Dockerfile 多阶段构建后 `CMD ["node", ".output/server/index.mjs"]`、监听 3000。nginx 需**两个 location**：先 `location /apps/<appid>/assets/ { proxy_pass http://<appid>:3000/assets/; }`（剥前缀映射 vite 静态产物，必须放在前面），再 `location /apps/<appid>/ { proxy_pass http://<appid>:3000; }`（SSR + API，不剥前缀）。其余（compose/字段/菜单）一致。
+- **后端用 Go/Python（仅按需）**：参照 `ref:approve`（Go，容器监听 80）、`ref:ai`（Python，监听 5001）。容器监听自己的端口，nginx 写 `proxy_pass http://<appid>:<该端口>`；这类后端常自己处理前缀（可加末尾 `/` 剥前缀），需主程序校验 token 时加 `auth_request` 子请求转发到 `http://service/api/<appid>/verifyToken`（见 `ref:approve` 的 `nginx.conf`）。
 
 ### 构建
 
 `docker build -t dootask/<appid>:<版本> -f src/Dockerfile src`（`scripts/build_image.sh` 已封装）。
 
-参照样板：`/home/coder/workspaces/dootask-plugins/asset-hub`（**默认 Next.js 全栈，首选对照**，含 `docs/rules/`）、`/home/coder/workspaces/dootask-plugins/system-plugins/approve`（Go + MySQL）、`/home/coder/workspaces/dootask-plugins/system-plugins/ai`（Python + Vite 前端，单进程 5001 端口同托管 `static/ui` + API）。
+参照样板：`ref:asset-hub`（**Next.js 全栈写法首选参照**，含 `docs/rules/`）、`ref:approve`（Go + MySQL）、`ref:ai`（Python + Vite 前端，单进程 5001 端口同托管 `static/ui` + API）。
 
 ---
 
@@ -181,7 +181,7 @@ volumes:
 
 要点：上游镜像版本**固定写死**（升级上游 = 改这里）；代理负责把 DooTask 的 token 换成上游账号体系的登录态。
 
-参照样板：`/home/coder/workspaces/dootask-plugins/memos`（包在 `dootask-plugin/` 子目录）。
+参照样板：`ref:memos`（包在 `dootask-plugin/` 子目录）。
 
 ---
 
@@ -217,7 +217,7 @@ volumes:
 
 两种子情况：
 
-**D1 复用现成镜像**（参照 `mysql-expose-port`）：不建自己的镜像，compose 直接用公共镜像。
+**D1 复用现成镜像**（参照 `ref:mysql-expose-port`）：不建自己的镜像，compose 直接用公共镜像。
 
 ```yaml
 # <版本>/docker-compose.yml
@@ -235,4 +235,4 @@ services:
 
 **D2 纯外链菜单**：连容器都不要，只在 `<版本>/config.yml` 里加一个 `menu_items`，`url` 指向外部地址，模式 `external`。这种插件可能不需要 `docker-compose.yml`/`nginx.conf`。
 
-参照样板：`/home/coder/workspaces/dootask-plugins/system-plugins/mysql-expose-port`（D1）。
+参照样板：`ref:mysql-expose-port`（D1）。

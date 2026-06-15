@@ -1,6 +1,6 @@
 # @dootask/tools 速查（插件 ↔ 主程序交互）
 
-官方工具库，前端 npm 包 + 后端 Go/Node/Python SDK。当前前端版本约 `1.2.7`（以 npm 实际为准）。本机源码：`/home/coder/workspaces/dootask-tools`（前端在 `src/`，后端在 `server/go`、`server/python`、`server/node`，另有 `example/` 示例）。在线仓库：`https://github.com/dootask/tools`。
+官方工具库，前端 npm 包 + 后端 Go/Node/Python SDK。当前前端版本约 `1.2.7`（以 npm 实际为准）。源码用代表词 `ref:tools` 指代（前端在 `src/`，后端在 `server/go`、`server/python`、`server/node`，另有 `example/` 示例）；本地路径与获取方式（本地优先，缺失则 `git clone --depth=1 https://github.com/dootask/tools`）见 `references/samples.md`。
 
 ## 一个包，两侧：前端（浏览器）≠ 后端（服务端）
 
@@ -9,7 +9,7 @@
 - **前端 / 浏览器侧** —— `import { appReady, getUserInfo, ... } from "@dootask/tools"`：微前端桥，拿主程序注入的用户/主题/语言、开对话框、选人等。**依赖 `window`**，在 Next.js / TanStack Start 等 SSR 框架里**必须客户端动态 `import()`（或 client-only）**，否则 SSR 阶段触碰 `window` 直接崩。
 - **后端 / 服务端侧** —— Node：`import { DooTaskClient } from "@dootask/tools"`（同包，另一入口）；以用户 token 调主程序 HTTP API，默认 `server: "http://nginx"`。其它语言：Go `github.com/dootask/tools/server/go`、Python `pip install dootask-tools`（`from dootask import DooTaskClient`）。
 
-判断：浏览器组件里 → 前端侧；route handler / server function / 后端进程里 → 后端侧。参照 `crm` 的 `lib/dootask.ts`（前端，动态 import）与 `lib/dootask-server.ts`（服务端，DooTaskClient）。
+判断：浏览器组件里 → 前端侧；route handler / server function / 后端进程里 → 后端侧。参照 `ref:crm` 的 `lib/dootask.ts`（前端，动态 import）与 `lib/dootask-server.ts`（服务端，DooTaskClient）。
 
 ## 前端
 
@@ -52,7 +52,7 @@ async function boot() {
 boot()
 ```
 
-调用自己的后端接口：菜单 url 里带了 `{user_token}`，前端从 URL query 取 token 传给后端；或用 `requestAPI` 调主程序接口。常见做法是前端读 `?token=&lang=&theme=` 初始化主题/语言/鉴权。
+调用自己的后端接口：菜单 url 里带了 `{user_token}`，前端从 URL query 取出传给后端；或用 `requestAPI` 调主程序接口。query 参数名自定但**前后端要一致**——真实样板 crm 用 `?theme=&lang=&user_id=&user_token=`（见 `references/config-yml.md` 的 menu_items 示例），前端就读 `user_token`/`user_id`。
 
 要点：所有方法返回 Promise；环境检测类 `isMicroApp()`/`isElectron()` 返回 boolean 不抛异常；`openWindow` 类仅特定客户端有效。
 

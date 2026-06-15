@@ -26,8 +26,8 @@ scripts/upload_to_appstore.sh <插件目录> <版本号> <作者>
 # 作者 = AppStore 发布账号，本机为 kuaifan
 ```
 
-**打包包含**：`config.yml`、`logo*`、`README*`、目标 `<版本>/` 整个目录、其它非版本子目录（如 `icon/`、`resources/`）。
-**打包排除**：`src/`、`.build.yml`、`.git` 等点文件、非目标的版本目录。
+**打包包含**：`config.yml`、`logo.*`、`README*`、目标 `<版本>/` 整个目录、其它非版本子目录（如 `icon/`、`resources/`）。
+**打包排除**：`src/`、`.build.yml`、`.git` 等点文件、非目标的版本目录、根目录其它文件（如 `CLAUDE.md` 开发记忆、`package.json`）。脚本对**根文件用白名单**（只收 `config.yml`/`logo.*`/`README*`），所以白名单外的根文件天然不打包——根 `CLAUDE.md` 是开发记忆、不该进应用商店包，正好被排除。
 
 判定「版本目录」的依据：子目录内含 `docker-compose.yml`。脚本据此只拷目标版本目录，跳过其它版本目录与 `src/`（点文件因 shell 通配默认不展开而天然排除）。
 
@@ -57,7 +57,7 @@ doo app container-logs community_<作者>_<appid> --service <服务名> -n 200  
 ```
 
 - 打开菜单入口（路径 `/apps/<appid>`），最小示例页应显示当前用户名 → 证明与主程序握手成功。
-- 装坏了：`doo app uninstall community_<作者>_<appid> [--delete-data]`；要彻底清掉社区应用：`doo app remove community_<作者>_<appid>`。
+- 装坏了：`doo app uninstall community_<作者>_<appid> [--delete-data] --yes`；要彻底清掉社区应用：`doo app remove community_<作者>_<appid> --yes`（先卸载再 remove）。**`uninstall`/`remove` 默认要交互确认，非交互/脚本流程必须加 `--yes`（`-y`），否则会卡在提示。**
 
 ## 常见报错排查
 
