@@ -1,6 +1,7 @@
 ---
-name: dootask-create-plugin
-description: 从零创建一个 DooTask 插件：脚手架 + 最小可跑示例，并通过 doo CLI 闭环到本地构建镜像、上传本机应用商店、安装验证。
+name: create-plugin
+description: 从零创建一个 DooTask 插件（脚手架 + 本地构建/安装验证）。
+disable-model-invocation: true
 ---
 
 # 创建 DooTask 插件

@@ -1,0 +1,83 @@
+name: Release
+
+# A 型（扁平·真实版本目录）插件的发布工作流。
+# 推送纯数字 tag（不带 v 前缀）触发：
+#   1) 多架构构建镜像推到 Docker Hub ${DOCKER_USERNAME}/<仓库名>
+#   2) 打包根级插件元数据 + 真实版本目录，发布到 DooTask 应用商店（appid: __APPID__）
+#
+# 生成时需替换的占位符：
+#   __APPID__          appstore-action 的 appid（= config.yml 的 appid，通常等于仓库名）
+#   __BUILD_CONTEXT__  docker build 上下文（读 .build.yml 的 context，脚手架标准为 src）
+#   __DOCKERFILE__     Dockerfile 路径（读 .build.yml 的 dockerfile，脚手架标准为 ./src/Dockerfile）
+# 镜像名无需填：自动取 ${DOCKER_USERNAME}/<仓库名>（前提：仓库名=appid、Docker 组织账号=dootask）。
+#
+# 依赖 4 个仓库 Secret（Settings → Secrets and variables → Actions）：
+#   DOCKER_USERNAME / DOCKER_PASSWORD
+#   DOOTASK_USERNAME / DOOTASK_PASSWORD
+
+on:
+  push:
+    tags:
+      - '*'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v5
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+
+      - name: Extract metadata
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: |
+            ${{ secrets.DOCKER_USERNAME }}/${{ github.event.repository.name }}
+          tags: |
+            type=ref,event=tag
+            type=raw,value=latest,enable={{is_default_branch}}
+
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v5
+        with:
+          context: __BUILD_CONTEXT__
+          file: __DOCKERFILE__
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          platforms: linux/amd64,linux/arm64
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      # 扁平布局：真实版本号目录（如 0.2.0/），发版前需已提交。
+      # 打包根级元数据 + 该版本目录，排除 src/ 前端工程与开发文件。
+      - name: Create plugin tar.gz package
+        run: |
+          raw_tag="${{ github.ref_name }}"
+          version="${raw_tag#v}"
+          if [ ! -d "$version" ]; then
+            echo "::error::版本目录 ${version}/ 不存在；发版前需先创建并提交 ${version}/。"
+            exit 1
+          fi
+          tar -czf plugin.tar.gz config.yml logo.* README*.md "$version"
+          echo "Package created:"
+          tar -tzf plugin.tar.gz
+
+      - name: Publish to DooTask App Store
+        id: publish
+        uses: dootask/appstore-action@v2
+        with:
+          username: ${{ secrets.DOOTASK_USERNAME }}
+          password: ${{ secrets.DOOTASK_PASSWORD }}
+          appid: '__APPID__'
+          package_file: './plugin.tar.gz'
+          draft: false

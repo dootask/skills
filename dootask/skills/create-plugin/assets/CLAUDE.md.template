@@ -25,7 +25,7 @@
 cd src && pnpm install && pnpm dev                                # 本地开发（脱离宿主自动降级）
 docker build -t dootask/{{appid}}:{{版本}} -f src/Dockerfile src   # 构建：tag 必须 = 安装版本号
 # 上传+安装+验证全在 doo 内闭环（前置：sudo npm i -g @dootask/cli + doo auth login）：
-# 1. 技能 dootask-create-plugin 的 scripts/upload_to_appstore.sh <本目录> {{版本}} {{作者}}
+# 1. 技能 dootask:create-plugin 的 scripts/upload_to_appstore.sh <本目录> {{版本}} {{作者}}
 #                                                            # 打包 → tar.gz → doo app upload
 # 2. doo app fields  community_{{作者}}_{{appid}}            # 看 fields（若有）
 # 3. doo app install community_{{作者}}_{{appid}} [--param K=V ...]

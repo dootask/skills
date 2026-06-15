@@ -1,6 +1,7 @@
 ---
 name: claude-md
-description: 创建或优化任意仓库的 CLAUDE.md(Claude Code 的项目记忆文件),内置官方与社区最佳实践。
+description: 创建或优化仓库的 CLAUDE.md。
+disable-model-invocation: true
 ---
 
 # 写 / 优化 CLAUDE.md
