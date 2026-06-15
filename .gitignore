@@ -1,0 +1,12 @@
+# OS / 编辑器
+.DS_Store
+Thumbs.db
+*.swp
+.idea/
+.vscode/
+
+# 临时与构建产物
+*.log
+*.tmp
+*.tar.gz
+node_modules/

@@ -21,20 +21,23 @@ DooTask 的 Claude Code 插件 —— 覆盖 DooTask 插件开发全流程的 `d
 
 ## 仓库结构
 
+扁平布局——**仓库根即 `dootask` 插件本身**（与 [superpowers](https://github.com/obra/superpowers) 同款）：
+
 ```text
-.claude-plugin/marketplace.json    # 市场清单（供 /plugin marketplace add）
-dootask/                           # dootask 插件
-├── .claude-plugin/plugin.json     # 插件清单，显式列出下方三个技能
-└── skills/
-    ├── create-plugin/
-    ├── release-plugin/
-    └── claude-md/
+.claude-plugin/
+├── marketplace.json    # 市场清单（供 /plugin marketplace add）
+└── plugin.json         # 插件清单（skills/ 自动发现，无需逐个列出）
+skills/                 # 三个技能，各一目录
+├── create-plugin/
+├── release-plugin/
+└── claude-md/
+LICENSE                 # MIT
 ```
 
 ## 两个身份
 
-- **本地加载目录**：本仓库即 `~/.claude/skills/` 本身，`clone` 后 `dootask` 插件经 `@skills-dir` 自动加载，改动直接生效、无需安装。
-- **可分发 marketplace**：他人按上方「安装」添加本仓库即可装 `dootask` 插件。对外更新靠 `git push`。
+- **可分发 marketplace**：他人按上方「安装」添加本仓库即可装 `dootask` 插件，对外更新靠 `git push`。
+- **本地开发**：`marketplace.json` 的 `source` 指向 `./`，本仓库既是市场也是插件；改动后用 `claude plugin validate .` 校验。
 
 ## 维护
 

@@ -1,5 +1,4 @@
 {
-  "$schema": "https://anthropic.com/claude-code/marketplace.schema.json",
   "name": "dootask-skills",
   "description": "DooTask 的 Claude Code 插件市场",
   "owner": {
@@ -9,7 +8,7 @@
   "plugins": [
     {
       "name": "dootask",
-      "source": "./dootask",
+      "source": "./",
       "description": "DooTask 插件工具集：create-plugin 脚手架创建插件 + release-plugin 发布到 Docker Hub 与 DooTask 应用商店"
     }
   ]

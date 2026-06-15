@@ -1,5 +1,4 @@
 {
-  "$schema": "https://anthropic.com/claude-code/plugin.schema.json",
   "name": "dootask",
   "version": "0.1.0",
   "description": "DooTask 插件工具集：create-plugin 脚手架创建插件 + release-plugin 发布到 Docker Hub 与 DooTask 应用商店",
@@ -7,9 +6,15 @@
     "name": "kuaifan",
     "email": "aipaw@live.cn"
   },
-  "skills": [
-    "./skills/create-plugin",
-    "./skills/release-plugin",
-    "./skills/claude-md"
+  "homepage": "https://github.com/dootask/skills",
+  "repository": "https://github.com/dootask/skills",
+  "license": "MIT",
+  "keywords": [
+    "dootask",
+    "plugin",
+    "scaffold",
+    "appstore",
+    "claude-code",
+    "skills"
   ]
 }
