@@ -1,6 +1,6 @@
 # dootask-skills
 
-DooTask 的 Claude Code 插件市场。**本仓库根即 `dootask` 插件本身**（扁平布局，superpowers 同款）。
+DooTask 的 Claude Code 插件市场。**本仓库根即 `dootask` 插件本身**（扁平布局）。
 
 ## 结构约定（改动时务必守住）
 

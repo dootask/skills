@@ -21,7 +21,7 @@ DooTask 的 Claude Code 插件 —— 覆盖 DooTask 插件开发全流程的 `d
 
 ## 仓库结构
 
-扁平布局——**仓库根即 `dootask` 插件本身**（与 [superpowers](https://github.com/obra/superpowers) 同款）：
+扁平布局——**仓库根即 `dootask` 插件本身**：
 
 ```text
 .claude-plugin/
