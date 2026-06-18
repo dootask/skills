@@ -27,7 +27,7 @@ import {
   modalSuccess, modalError, modalConfirm, messageSuccess, messageError,
   closeApp, backApp, interceptBack,
   openWindow, openTabWindow, openDialog,
-  setCapsuleConfig, isMicroApp,
+  setCapsuleConfig, addMenuClickListener, isMicroApp,
   UnsupportedError,
 } from "@dootask/tools"
 ```
@@ -57,6 +57,18 @@ boot()
 要点：所有方法返回 Promise；环境检测类 `isMicroApp()`/`isElectron()` 返回 boolean 不抛异常；`openWindow` 类仅特定客户端有效。
 
 **生产级模式（参照 asset-hub）**：用一个 Bridge 组件（如 `components/providers/DooTaskBridge.tsx`）在应用最外层 `await appReady()` 一次，把用户/主题/语言放进 context 供全局用；用户上下文走菜单 url 的标准参数 `?theme={system_theme}&lang={system_lang}&user_id={user_id}&user_token={user_token}`；脱离宿主（直接浏览器打开）捕获 `UnsupportedError` 自动降级。后端接口鉴权常用「前端把 user_id/token 放进请求头（如 `x-user-id`），服务端读取」的简单方式。
+
+## 右上角胶囊
+
+插件装进主程序弹窗后，右上角会浮一个主程序的「胶囊」条（默认「更多」+「关闭」）盖在页面上。**前端布局别占右上角**，否则被盖住、点击被挡。需要时 `setCapsuleConfig(config)` 调整（按 appid 持久缓存）：
+
+| 字段 | 类型 | 默认 | 说明 |
+| --- | --- | --- | --- |
+| `visible` | `boolean` | `true` | 显隐（自己页面已有导航/关闭时可关） |
+| `top` / `right` | `number` | `10` | 距顶/右像素 |
+| `more_menus` | `Array<{label, value}>` | — | 往「更多」加自定义项 |
+
+自定义项的点击用 `addMenuClickListener(cb)` 收，`cb` 参数即被点项的 `value`，返回注销函数（卸载时调用）。仅微前端环境有效，非宿主环境会抛 `UnsupportedError`。
 
 ## 后端 SDK
 
