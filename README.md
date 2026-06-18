@@ -1,8 +1,10 @@
 # dootask/skills
 
-DooTask 的 Claude Code 插件 —— 覆盖 DooTask 插件开发全流程的 `dootask:*` 技能。
+DooTask 的编码 Agent 插件 —— 覆盖 DooTask 插件开发全流程的 `dootask:*` 技能。同一套 `skills/` 同时供 [Claude Code](#claude-code) 与 [Codex](#codex) 使用。
 
 ## 安装
+
+### Claude Code
 
 ```text
 /plugin marketplace add dootask/skills
@@ -10,6 +12,20 @@ DooTask 的 Claude Code 插件 —— 覆盖 DooTask 插件开发全流程的 `d
 ```
 
 装好后用 `/dootask:<技能>` 调用。所有技能均为**显式调用**（`disable-model-invocation`），不会被自动触发。
+
+### Codex
+
+Codex 原生扫描 `skills/` 目录发现技能（清单见 `.codex-plugin/plugin.json`）。手动安装（跟踪 main 分支）：
+
+```bash
+# 1. 克隆本仓库
+git clone https://github.com/dootask/skills ~/.codex/dootask-skills
+# 2. 把 skills/ 软链到 Codex 技能目录，让其发现
+mkdir -p ~/.agents/skills
+ln -s ~/.codex/dootask-skills/skills ~/.agents/skills/dootask
+```
+
+之后在 Codex 里按技能名调用即可。更新：`git -C ~/.codex/dootask-skills pull`。
 
 ## 技能
 
@@ -26,7 +42,10 @@ DooTask 的 Claude Code 插件 —— 覆盖 DooTask 插件开发全流程的 `d
 ```text
 .claude-plugin/
 ├── marketplace.json    # 市场清单（供 /plugin marketplace add）
-└── plugin.json         # 插件清单（skills/ 自动发现，无需逐个列出）
+└── plugin.json         # Claude Code 插件清单（skills/ 自动发现，无需逐个列出）
+.codex-plugin/
+└── plugin.json         # Codex 插件清单（"skills": "./skills/"）
+AGENTS.md -> CLAUDE.md   # Codex 等 Agent 读取的仓库上下文，软链到 CLAUDE.md
 skills/                 # 三个技能，各一目录
 ├── create-plugin/
 ├── release-plugin/
