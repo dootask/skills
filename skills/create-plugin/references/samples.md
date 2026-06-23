@@ -35,8 +35,9 @@ REFDIR="${DOOTASK_REFS:-/tmp/dootask-refs}"; mkdir -p "$REFDIR"
 | `ref:ai` | 样板·形态A 变体·Python + Vite（单进程 5001 同托管 `static/ui` + API） | `~/workspaces/dootask-plugins/system-plugins/ai` | `dootask/system-plugins`（公开，子目录 `ai`） |
 | `ref:mysql-expose-port` | 样板·形态D1·纯配置复用现成镜像 | `~/workspaces/dootask-plugins/system-plugins/mysql-expose-port` | `dootask/system-plugins`（公开，子目录 `mysql-expose-port`） |
 | `ref:tools` | `@dootask/tools` 源码（前端 `src/` + 后端 `server/{go,node,python}` + `example/`） | `~/workspaces/dootask-tools` | `dootask/tools`（公开） |
+| `ref:doo-cli` | `doo` CLI（npm 包 `@dootask/cli`）源码 + README；**完整命令以 `doo --help` / `doo <子命令> --help` 实时输出为准** | `~/workspaces/dootask-tools/server/cli` | `dootask/tools`（公开，子目录 `server/cli`） |
 | `ref:appstore-docs` | 官方插件开发文档 `apps/_/README_CN.md` | `~/workspaces/dootask-appstore/appstore/apps/_/README_CN.md` | `dootask/appstore`（**私有**，需 gh 授权才能 clone） |
 | `ref:dootask` | 主程序源码（查 API / 约定 / 主程序行为时读它） | `~/workspaces/dootask` | `kuaifan/dootask`（公开） |
 | `ref:app-landing` | 应用落地目录（`doo app upload` 导入后所在，只读参考） | `~/workspaces/dootask/docker/appstore/apps` | 运行时生成，**无在线源** |
 
-> 表中本机路径用 `~/workspaces/...` 表示约定位置；实际开发机展开为 `/home/coder/workspaces/...`。`DOOTASK_REFS` 未设时临时目录默认 `/tmp/dootask-refs`。`ref:` 代表词 → 在线仓库的映射多数同名（`ref:crm`→`dootask/crm`），少数例外见表（`ref:approve`/`ref:ai`/`ref:mysql-expose-port`→`dootask/system-plugins` 子目录，`ref:dootask`→`kuaifan/dootask`）。
+> 表中本机路径用 `~/workspaces/...` 表示约定位置；实际开发机展开为 `/home/coder/workspaces/...`。`DOOTASK_REFS` 未设时临时目录默认 `/tmp/dootask-refs`。`ref:` 代表词 → 在线仓库的映射多数同名（`ref:crm`→`dootask/crm`），少数例外见表（`ref:approve`/`ref:ai`/`ref:mysql-expose-port`→`dootask/system-plugins` 子目录，`ref:doo-cli`→`dootask/tools` 子目录 `server/cli`，`ref:dootask`→`kuaifan/dootask`）。
