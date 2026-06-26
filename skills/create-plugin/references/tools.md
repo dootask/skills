@@ -27,7 +27,7 @@ import {
   modalSuccess, modalError, modalConfirm, messageSuccess, messageError,
   closeApp, backApp, interceptBack,
   openWindow, openTabWindow, openDialog,
-  setCapsuleConfig, addMenuClickListener, isMicroApp,
+  setCapsuleConfig, addMenuClickListener, getSafeArea, isMicroApp,
   UnsupportedError,
 } from "@dootask/tools"
 ```
@@ -69,6 +69,12 @@ boot()
 | `more_menus` | `Array<{label, value}>` | — | 往「更多」加自定义项 |
 
 自定义项的点击用 `addMenuClickListener(cb)` 收，`cb` 参数即被点项的 `value`，返回注销函数（卸载时调用）。仅微前端环境有效，非宿主环境会抛 `UnsupportedError`。
+
+## 移动端安全距离
+
+移动 App 端屏幕顶部（状态栏/刘海）、底部（Home 指示条）会占位，菜单 `immersive: true`（沉浸式）时尤甚；桌面/Web 无此问题。`getSafeArea()` 返回 `{ top, bottom }`（像素，桌面为 `0`）。
+
+**别用 CSS `env(safe-area-inset-*)`**——插件是主程序 WebView 里的嵌套 iframe，`env()` 取不到可靠 inset（主程序自身也用 JS 数值）。跟随主程序：`appReady` 后用 `getSafeArea()` 的 px 让顶/底布局让位（写到 `<html>` 的 CSS 变量供全局消费最省事）。握手取一次，旋转后未必更新。移动沉浸式下右上角胶囊也需在布局上留一条避让带（见「右上角胶囊」）。
 
 ## 后端 SDK
 
