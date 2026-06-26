@@ -120,6 +120,21 @@ conflict_version:
   reason: { en: "...", zh: "..." }
 ```
 
+### openapi / knowledge_base（推荐：让主程序 AI 能用上你的插件）
+
+适合接入 AI 的插件建议默认带上——主应用的用户/AI 才能完整用上它：有值得被调用的后端操作就声明 `openapi`（用户/AI 可 `doo app call` 执行），有面向用户、会被问到的用法就带 `knowledge_base`（产品内「AI 助手」可解答）。两者各自独立判断，都没有就都不加。顶层或版本目录均可（版本目录覆盖），不声明则不启用。
+
+```yaml
+# 有后端接口就声明：指向后端 OpenAPI 3.x / Swagger 2.0 规范 → 用户/AI 可 `doo app call <appid> <指令>` 调你的接口
+openapi: ./openapi.yaml      # 静态文件；或对象式 {service, port, path} 指运行时端点；或 {file, service, port} 并用
+# 面向用户的应用就带上：知识库随包发布，装了「AI 助手」后并入其检索、卸载自动移除
+knowledge_base: ./ai-kb      # 指向应用内目录，结构 <语言>/<类型>/<功能>/*.md，每个 .md 带 frontmatter
+```
+
+- `openapi`：调用自带当前用户身份（`Token` + `X-Doo-User-Id/Email/Name/Role` 头），后端自行鉴权（推荐用后端 SDK 校验）；指令名取 operation 的 `operationId`，可用 `x-doo-cli-name` 改名、`x-doo-cli: false` 隐藏某接口；`query`/`path`/扁平请求体顶层字段→命令参数（`K=V`），复杂体用 `--data '<json>'`。多服务应用用 `openapi.service`（必要时加 `openapi.port`）指定接口所在服务。
+- `knowledge_base`：chunk `id` 须全局唯一（建议加应用功能名前缀，如 `example.start.howto`）；需装「AI 助手」应用才被检索（安装顺序无所谓）；写作规范同主程序 `resources/ai-kb/`（参考其 `_schema/` 与 `README.md`）。
+- 完整细节以 `ref:appstore-docs` 为准。
+
 ## docker-compose.yml 内置变量
 
 | 变量 | 说明 |

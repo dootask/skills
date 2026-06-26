@@ -24,6 +24,7 @@
 - 顶层 `config.yml` 只放元数据；`fields`/`menu_items`/`hooks` 放 `{{版本}}/config.yml`。
 - `@dootask/tools` 分两侧别混用：**前端侧**(`appReady`/`getUserInfo`，依赖 window，SSR 下必须动态 `import()`)、**后端侧**(`DooTaskClient`，调主程序 `http://nginx`)。
 - **右上角被主程序胶囊占用**：自身 UI 别放右上角；按需 `setCapsuleConfig` 调显隐/位置、`addMenuClickListener` 收「更多」点击（详情读 `ref:tools`）。
+- **接入主程序 AI（适合就留，纯底层插件可删此条）**：新增值得被调用的后端操作时同步维护 `openapi`（指向 OpenAPI/Swagger 规范）→ 用户/AI 可 `doo app call {{appid}} <指令>` 执行；新增面向用户的用法时补 `knowledge_base` 知识库目录 → 产品内「AI 助手」可解答。详见 `ref:appstore-docs`。
 
 ## 命令
 
